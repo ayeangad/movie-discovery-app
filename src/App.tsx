@@ -5,6 +5,7 @@ import Spinner from './components/Spinner.tsx';
 import heroImage from './assets/hero_1.png';
 import { useEffect, useState } from 'react'
 import { useDebounce } from 'react-use';
+import { getTrendingMovies, updateSearchCount } from './appwrite.ts';
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -23,6 +24,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [movieList, setMovieList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [trendingMovies, setTrendingMovies] = useState([])
   const [debouchedSearchTerm, setdebouchedSearchTerm] = useState<string>('')
 
   useDebounce(() => setdebouchedSearchTerm(searchTerm), 500, [searchTerm])
@@ -45,6 +47,9 @@ const App = () => {
 
       setMovieList(data.results || [])
 
+      if (query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0])
+      }
     } catch (error) {
       console.error(`Error fetching movies: ${error}`)
       setErrorMessage('Error fetching movies. Please try again later!')
@@ -53,9 +58,22 @@ const App = () => {
     }
   }
 
+  const loadTrendingMovies = async (query: string) => {
+    try {
+      const movies = await getTrendingMovies();
+      setTrendingMovies(movies)
+    } catch (error) {
+      console.log(`Error fething trending movies: ${error}`)
+    }
+  }
+
   useEffect(() => {
-    fetchMovie(debouchedSearchTerm)
+    fetchMovie(debouchedSearchTerm);
   }, [debouchedSearchTerm]);
+
+  useEffect(() => {
+    loadTrendingMovies();
+  }, [])
 
   return (
     <main>
@@ -68,6 +86,20 @@ const App = () => {
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
+        {trendingMovies.length > 0 && (
+          <section className='trending'>
+            <h2>Trending Movies</h2>
+            <ul>
+              {trendingMovies.map((movie: any, index: number) => (
+                <li key={movie.$id}>
+                  <p>{index + 1}</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className='All movies'>
           <h2 className="mt-[40px]"> All Movies </h2>
