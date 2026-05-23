@@ -4,6 +4,7 @@ import MovieCard from './components/MovieCard.tsx';
 import Spinner from './components/Spinner.tsx';
 import heroImage from './assets/hero_1.png';
 import { useEffect, useState } from 'react'
+import { useDebounce } from 'react-use';
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
@@ -22,6 +23,9 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [movieList, setMovieList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [debouchedSearchTerm, setdebouchedSearchTerm] = useState<string>('')
+
+  useDebounce(() => setdebouchedSearchTerm(searchTerm), 500, [searchTerm])
 
   const fetchMovie = async (query: string) => {
     setIsLoading(true);
@@ -50,8 +54,8 @@ const App = () => {
   }
 
   useEffect(() => {
-    fetchMovie(searchTerm)
-  }, [searchTerm]);
+    fetchMovie(debouchedSearchTerm)
+  }, [debouchedSearchTerm]);
 
   return (
     <main>
