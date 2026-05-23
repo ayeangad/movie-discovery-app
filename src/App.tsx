@@ -50,8 +50,8 @@ const App = () => {
   }
 
   useEffect(() => {
-    fetchMovie()
-  }, []);
+    fetchMovie(searchTerm)
+  }, [searchTerm]);
 
   return (
     <main>
@@ -60,7 +60,7 @@ const App = () => {
       <div className="wrapper">
         <header>
           <img src={heroImage} alt="Hero Banner" />
-          <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy Without The Hassle</h1>
+          <h1>Find <span className="text-gradient">Movies</span> You'll ACTUALLY Enjoy</h1>
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
@@ -73,8 +73,8 @@ const App = () => {
           ) : errorMessage ? (
             <p className='text-red-500'>{errorMessage}</p>
           ) : (
-            <ul>
-              {movieList.map((movie: any) => (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {movieList?.map((movie: any) => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}
             </ul>
