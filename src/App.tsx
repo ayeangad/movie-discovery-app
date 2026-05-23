@@ -24,7 +24,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [movieList, setMovieList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [trendingMovies, setTrendingMovies] = useState([])
+  const [trendingMovies, setTrendingMovies] = useState<any[]>([])
   const [debouchedSearchTerm, setdebouchedSearchTerm] = useState<string>('')
 
   useDebounce(() => setdebouchedSearchTerm(searchTerm), 500, [searchTerm])
@@ -58,7 +58,7 @@ const App = () => {
     }
   }
 
-  const loadTrendingMovies = async (query: string) => {
+  const loadTrendingMovies = async () => {
     try {
       const movies = await getTrendingMovies();
       setTrendingMovies(movies)
@@ -94,7 +94,7 @@ const App = () => {
               {trendingMovies.map((movie: any, index: number) => (
                 <li key={movie.$id}>
                   <p>{index + 1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
+                  <img src={movie.poster_url} alt={movie.searchTerm} />
                 </li>
               ))}
             </ul>
